@@ -62,7 +62,12 @@ job_roles_keywords = {
 @app.route('/analyze', methods=['POST'])
 def analyze():
     if 'resume' not in request.files or 'job_role' not in request.form:
-        return jsonify({'error': 'Missing data'}), 400
+        return jsonify({'status': 'Working'})
+
+
+@app.route('/')
+def home():
+     return "Resume Analyzer Backend is Live!
 
     resume_file = request.files['resume']
     job_role = request.form['job_role']
