@@ -56,7 +56,7 @@ job_roles_keywords = {
     "Digital Marketing Analyst": ["seo", "google analytics", "ppc", "content", "social media"],
     "Instructional Designer": ["storyboarding", "e-learning", "articulate", "lms", "pedagogy"],
     "Data Architect": ["data modeling", "sql", "data governance", "big data", "cloud"],
-    "Bioinformatics Scientist": ["python", "genomics", "biopython", "r", "data analysis"],... add more up to 50 (or keep adding later easily)
+    "Bioinformatics Scientist": ["python", "genomics", "biopython", "r", "data analysis"]
 }
 
 @app.route('/analyze', methods=['POST'])
