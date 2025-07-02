@@ -6,79 +6,36 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# List of 50 job roles with sample keyword mapping
+# Job keywords
 job_roles_keywords = {
-    "Data Scientist": ["python", "machine learning", "pandas", "tensorflow", "sql"],
-    "Web Developer": ["html", "css", "javascript", "react", "node.js"],
-    "Android Developer": ["java", "kotlin", "android studio", "xml", "firebase"],
+    "Data Analyst": ["excel", "sql", "tableau", "python", "data visualization"],
+    "Software Engineer": ["java", "c++", "python", "git", "algorithms"],
     "AI Engineer": ["python", "deep learning", "nlp", "pytorch", "opencv"],
+    "Web Developer": ["html", "css", "javascript", "react", "node.js"],
+    "Cloud Engineer": ["aws", "azure", "devops", "linux", "cloud formation"],
     "Backend Developer": ["node.js", "express", "mongodb", "docker", "sql"],
     "Frontend Developer": ["html", "css", "javascript", "react", "vue.js"],
     "DevOps Engineer": ["docker", "kubernetes", "aws", "jenkins", "linux"],
-    "Full Stack Developer": ["html", "css", "javascript", "node.js", "react", "mongodb"],
-    "Cloud Architect": ["aws", "azure", "gcp", "terraform", "cloudformation"],
-    "Database Administrator": ["sql", "mysql", "postgresql", "oracle", "backup"],
-    "Data Engineer": ["python", "sql", "hadoop", "spark", "airflow"],
-    "ML Engineer": ["python", "scikit-learn", "tensorflow", "keras", "numpy"],
+    "Database Admin": ["sql", "mysql", "postgresql", "oracle", "backup"],
     "Cybersecurity Analyst": ["network security", "penetration testing", "firewall", "nmap", "wireshark"],
-    "Business Analyst": ["excel", "sql", "power bi", "tableau", "requirement analysis"],
-    "QA Engineer": ["selenium", "junit", "postman", "automation", "manual testing"],
-    "UI/UX Designer": ["figma", "adobe xd", "sketch", "wireframing", "prototyping"],
-    "Game Developer": ["unity", "c#", "blender", "game physics", "3d modeling"],
-    "Embedded Systems Engineer": ["c", "c++", "microcontrollers", "arduino", "raspberry pi"],
-    "Robotics Engineer": ["ros", "python", "c++", "opencv", "embedded systems"],
-    "Blockchain Developer": ["solidity", "ethereum", "web3.js", "smart contracts", "ganache"],
-    "IoT Engineer": ["iot", "mqtt", "esp32", "arduino", "sensors"],
-    "System Administrator": ["linux", "windows server", "bash", "active directory", "networking"],
-    "Technical Writer": ["markdown", "api documentation", "jira", "xml", "git"],
-    "Network Engineer": ["routing", "switching", "cisco", "firewalls", "vpn"],
-    "IT Support Specialist": ["troubleshooting", "windows", "hardware", "networking", "ticketing tools"],
-    "Product Manager": ["agile", "scrum", "jira", "roadmap", "analytics"],
-    "Software Engineer": ["java", "c++", "python", "git", "algorithms"],
-    "NLP Engineer": ["spacy", "nltk", "transformers", "bert", "text classification"],
-    "Computer Vision Engineer": ["opencv", "pytorch", "image processing", "cnn", "tensorflow"],
-    "Big Data Engineer": ["hadoop", "spark", "hive", "kafka", "sqoop"],
-    "AR/VR Developer": ["unity", "c#", "arcore", "arkit", "3d modeling"],
-    "ETL Developer": ["etl", "informatica", "talend", "data warehouse", "sql"],
-    "Salesforce Developer": ["apex", "visualforce", "salesforce", "soql", "lightning"],
-    "Technical Support Engineer": ["helpdesk", "troubleshooting", "windows", "vpn", "ticketing"],
-    "Site Reliability Engineer": ["monitoring", "logging", "kubernetes", "incident response", "sre"],
-    "CRM Specialist": ["crm", "salesforce", "zoho", "hubspot", "customer support"],
-    "Solutions Architect": ["cloud", "aws", "architecture", "design patterns", "scalability"],
-    "Penetration Tester": ["metasploit", "burpsuite", "nmap", "exploit", "vulnerability"],
-    "Cloud Engineer": ["aws", "azure", "devops", "linux", "cloud formation"],
-    "IT Consultant": ["strategy", "cloud", "implementation", "audit", "compliance"],
-    "Mobile App Developer": ["flutter", "dart", "android", "ios", "firebase"],
-    "Security Analyst": ["siem", "threat hunting", "network security", "incident response", "firewall"],
-    "Data Analyst": ["excel", "sql", "tableau", "python", "data visualization"],
-    "AI Researcher": ["deep learning", "research papers", "pytorch", "transformers", "cv/nlp"],
-    "Operations Engineer": ["scripting", "monitoring", "deployment", "incident", "linux"],
-    "Digital Marketing Analyst": ["seo", "google analytics", "ppc", "content", "social media"],
-    "Instructional Designer": ["storyboarding", "e-learning", "articulate", "lms", "pedagogy"],
-    "Data Architect": ["data modeling", "sql", "data governance", "big data", "cloud"],
-    "Bioinformatics Scientist": ["python", "genomics", "biopython", "r", "data analysis"]
+    # Add more if needed
 }
+
+@app.route('/')
+def home():
+    return "Resume Analyzer Backend is Live!"
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
     if 'resume' not in request.files or 'job_role' not in request.form:
-        return jsonify({'status': 'Working'})
-
-
-@app.route('/')
-def home():
-     return "Resume Analyzer Backend is Live!
+        return jsonify({'error': 'Missing resume or job role'}), 400
 
     resume_file = request.files['resume']
     job_role = request.form['job_role']
 
     try:
         reader = PyPDF2.PdfReader(resume_file)
-        resume_text = ''
-        for page in reader.pages:
-            resume_text += page.extract_text() or ''
-
-        resume_text = resume_text.lower()
+        resume_text = ''.join([page.extract_text() or '' for page in reader.pages]).lower()
 
         keywords = job_roles_keywords.get(job_role, [])
         score = sum(1 for keyword in keywords if keyword in resume_text)
@@ -96,7 +53,5 @@ def home():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    import os
-port = int(os.environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port, debug=True)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
